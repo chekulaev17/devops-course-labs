@@ -3,10 +3,10 @@ Description=Catty App
 After=network.target
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/DevOps/website-example
-EnvironmentFile=/home/ubuntu/DevOps/website-example/.env.deploy
-ExecStart=/home/anm/DevOps/website-example/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8181
+User=chekulaev17
+WorkingDirectory=/home/chekulaev17/catty-reminders-app
+EnvironmentFile=/home/chekulaev17/catty-reminders-app/.env.deploy
+ExecStart=/home/chekulaev17/catty-reminders-app/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8181
 Restart=always
 
 [Install]
