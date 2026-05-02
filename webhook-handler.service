@@ -1,0 +1,12 @@
+[Unit]
+Description=Webhook Handler
+After=network.target
+
+[Service]
+User=chekulaev17
+WorkingDirectory=/home/chekulaev17/webhook-handler
+ExecStart=/home/chekulaev17/webhook-handler/venv/bin/python /home/chekulaev17/webhook-handler/webhook_handler.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
