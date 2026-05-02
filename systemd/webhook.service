@@ -3,9 +3,9 @@ Description=Webhook Server
 After=network.target
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/DevOps/website-example
-ExecStart=/usr/bin/python3 /home/ubuntu/DevOps/website-example/webhook-server.py
+User=chekulaev17
+WorkingDirectory=/home/chekulaev17/catty-reminders-app
+ExecStart=/usr/bin/python3 webhook-server.py
 Restart=always
 
 [Install]
