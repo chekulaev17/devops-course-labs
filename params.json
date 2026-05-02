@@ -294,6 +294,12 @@
       "login": "VladaGusakova",
       "id": "gusakova",
       "app": "catty-reminders-app"
-    }
+    },
+    {
+          
+      "login": "chekulaev17",
+      "id": "chekulaev",
+      "app": "catty-reminders-app"
+    },
   ]
 }
