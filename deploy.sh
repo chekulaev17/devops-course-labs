@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="/home/anm/DevOps/website-example"
+APP_DIR="/home/chekulaev17/catty-reminders-app"
 ENV_FILE="$APP_DIR/.env.deploy"
 
 cd "$APP_DIR"
