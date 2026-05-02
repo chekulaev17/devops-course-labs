@@ -14,3 +14,4 @@ name = "app-chekulaev17"
 type = "http"
 localPort = 8181
 customDomains = ["app.chekulaev17.course.prafdin.ru"]
+
