@@ -4,14 +4,14 @@ auth.method = "token"
 auth.token = "devops"
 
 [[proxies]]
-name = "hook-chekulaev17"
+name = "hook-chekulaev"
 type = "http"
 localPort = 8080
-customDomains = ["webhook.chekulaev17.course.prafdin.ru"]
+customDomains = ["webhook.chekulaev.course.prafdin.ru"]
 
 [[proxies]]
-name = "app-chekulaev17"
+name = "app-chekulaev"
 type = "http"
 localPort = 8181
-customDomains = ["app.chekulaev17.course.prafdin.ru"]
+customDomains = ["app.chekulaev.course.prafdin.ru"]
 
