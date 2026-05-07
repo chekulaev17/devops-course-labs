@@ -2,3 +2,5 @@ Flask==2.3.3
 playwright
 fastapi
 jinja2
+PyJWT
+tinydb
