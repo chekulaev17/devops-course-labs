@@ -28,7 +28,7 @@ jobs:
       
       - name: Run tests
         run: |
-          pytest tests/ --junitxml=test_result.xml || true
+          PYTHONPATH=$PYTHONPATH:./testlib pytest tests/ --junitxml=test_result.xml || true
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
