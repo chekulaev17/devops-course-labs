@@ -1,13 +1,4 @@
-"""
-This module provides support for test inputs.
-"""
-
-# --------------------------------------------------------------------------------
-# Class: User
-# --------------------------------------------------------------------------------
-
 class User:
-
-  def __init__(self, username, password):
-    self.username = username
-    self.password = password
+    def __init__(self, username: str, password: str):
+        self.username = username
+        self.password = password
