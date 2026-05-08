@@ -132,8 +132,5 @@ dmypy.json
 # Databases
 *db.json
 .idea/
-tests/
-testlib/
-requirements.txt
 webhook_handler.py
 webhook-handler.service
