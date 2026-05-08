@@ -1,0 +1,17 @@
+serverAddr = "course.prafdin.ru"
+serverPort = 7000
+
+auth.method = "token"
+auth.token = "tokentoken"
+
+[[proxies]]
+name = "app-chekulaev17"
+type = "http"
+localPort = 8181
+customDomains = ["app.chekulaev17.course.prafdin.ru"]
+
+[[proxies]]
+name = "ssh-chekulaev17"
+type = "tcp"
+localPort = 22
+remotePort = 3179
