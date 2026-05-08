@@ -3,26 +3,33 @@ name: CD
 on:
   release:
     types: [published]
+
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Deploy to server via SSH
+    steps:
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+
         with:
           host: course.prafdin.ru
           port: 3179
           username: chekulaev17
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+
           script: |
             set -e
+
             cd /home/chekulaev17/catty-reminders-app
+
             git fetch origin
-            git checkout ${{ github.sha }}
+            git reset --hard ${{ github.sha }}
+
+            pip install -r requirements.txt
+
             echo "DEPLOY_REF=${{ github.sha }}" | sudo tee /etc/catty-app-env
+
             sudo systemctl restart catty
