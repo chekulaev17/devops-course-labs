@@ -8,12 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Deploy via SSH
+
+      - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: course.prafdin.ru
@@ -21,8 +20,9 @@ jobs:
           username: chekulaev17
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cd /home/chekulaev17/catty-reminders-app
-            git fetch --all
-            git reset --hard ${{ github.sha }}
+            git fetch origin
+            git checkout ${{ github.sha }}
             echo "DEPLOY_REF=${{ github.sha }}" | sudo tee /etc/catty-app-env
             sudo systemctl restart catty
