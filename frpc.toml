@@ -2,7 +2,7 @@ serverAddr = "course.prafdin.ru"
 serverPort = 7000
 
 auth.method = "token"
-auth.token = "tokentoken"
+auth.token = "devops"
 
 [[proxies]]
 name = "app-chekulaev17"
