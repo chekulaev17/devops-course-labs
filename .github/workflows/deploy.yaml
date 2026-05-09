@@ -9,22 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy
+      - name: Deploy application
         uses: appleboy/ssh-action@v1.0.3
+
         with:
           host: course.prafdin.ru
           username: chekulaev17
           port: 3179
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+
           script: |
-            bash -c '
-              set -e
+            set -e
 
-              cd /home/chekulaev17/catty-reminders-app
+            OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
-              chmod +x ./deploy.sh
+            IMAGE="ghcr.io/$OWNER/${{ github.event.repository.name }}"
+            DEPLOY_REF="${{ github.event.release.target_commitish }}"
 
-              OWNER=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+            cd /home/chekulaev17/catty-reminders-app
 
-              ./deploy.sh ghcr.io/$OWNER/${{ github.event.repository.name }} ${{ github.sha }}
-            '
+            chmod +x deploy.sh
+
+            ./deploy.sh $IMAGE $DEPLOY_REF
