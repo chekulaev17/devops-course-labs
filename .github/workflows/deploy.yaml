@@ -1,32 +1,30 @@
 name: Deploy
 
 on:
-release:
-types: [published]
+  release:
+    types: [published]
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Deploy
-    uses: appleboy/ssh-action@v1.0.3
-    with:
-      host: course.prafdin.ru
-      username: chekulaev17
-      port: 3179
-      key: ${{ secrets.SSH_PRIVATE_KEY }}
-      script: |
-        bash -c '
-          set -e
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: course.prafdin.ru
+          username: chekulaev17
+          port: 3179
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            bash -c '
+              set -e
 
-          cd /home/chekulaev17/catty-reminders-app
+              cd /home/chekulaev17/catty-reminders-app
 
-          chmod +x ./deploy.sh
+              chmod +x ./deploy.sh
 
-          OWNER=$(echo ${{ github.repository_owner }} | tr "[:upper:]" "[:lower:]")
+              OWNER=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
-          ./deploy.sh ghcr.io/$OWNER/${{ github.event.repository.name }} ${{ github.sha }}
-        '
-
-# test
+              ./deploy.sh ghcr.io/$OWNER/${{ github.event.repository.name }} ${{ github.sha }}
+            '
