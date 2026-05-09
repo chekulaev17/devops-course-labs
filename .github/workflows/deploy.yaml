@@ -1,35 +1,32 @@
-name: CD
+name: Deploy
 
 on:
-  release:
-    types: [published]
-
-  workflow_dispatch:
+release:
+types: [published]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+deploy:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+```
+steps:
+  - name: Deploy
+    uses: appleboy/ssh-action@v1.0.3
+    with:
+      host: course.prafdin.ru
+      username: chekulaev17
+      port: 3179
+      key: ${{ secrets.SSH_PRIVATE_KEY }}
+      script: |
+        bash -c '
+          set -e
 
-        with:
-          host: course.prafdin.ru
-          port: 3179
-          username: chekulaev17
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          cd /home/chekulaev17/catty-reminders-app
 
-          script: |
-            set -e
+          chmod +x ./deploy.sh
 
-            cd /home/chekulaev17/catty-reminders-app
+          OWNER=$(echo ${{ github.repository_owner }} | tr "[:upper:]" "[:lower:]")
 
-            git fetch origin
-            git reset --hard ${{ github.sha }}
+          ./deploy.sh ghcr.io/$OWNER/${{ github.event.repository.name }} ${{ github.sha }}
+        '
 
-            pip install --break-system-packages -r requirements.txt
-
-            echo "DEPLOY_REF=${{ github.sha }}" | sudo tee /etc/catty-app-env
-
-            sudo systemctl restart catty
