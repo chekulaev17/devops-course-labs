@@ -29,3 +29,4 @@ steps:
           ./deploy.sh ghcr.io/$OWNER/${{ github.event.repository.name }} ${{ github.sha }}
         '
 
+# test
