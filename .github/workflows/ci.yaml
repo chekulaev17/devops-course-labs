@@ -27,17 +27,23 @@ jobs:
           pip install pytest pytest-playwright
           playwright install chromium
 
-
       - name: Start application
         run: |
           nohup uvicorn app.main:app --host 0.0.0.0 --port 8181 > server.log 2>&1 &
+
           sleep 15
 
+          echo "===== PROCESS ====="
+          ps aux | grep uvicorn || true
+
           echo "===== SERVER LOG ====="
-          cat server.log
+          cat server.log || true
 
           echo "===== PORT CHECK ====="
-          curl http://localhost:8181/login || true
+          curl -v http://127.0.0.1:8181/login || true
+
+          echo "===== FILE TREE ====="
+          find . -maxdepth 3 -type f | sort
 
       - name: Run tests
         run: pytest --junitxml=test_result.xml
@@ -47,4 +53,3 @@ jobs:
         with:
           name: test_result
           path: test_result.xml
-
