@@ -1,2 +1,18 @@
-def test_math():
-    assert 2 * 2 == 4
+"""
+This module contains unit tests for the Catty app.
+"""
+
+from app.utils.auth import serialize_token, deserialize_token
+from testlib.inputs import User
+
+
+def test_token_serialization(user: User):
+    token = serialize_token(user.username)
+
+    assert token
+    assert isinstance(token, str)
+    assert token != user.username
+
+    username = deserialize_token(token)
+
+    assert username == user.username
