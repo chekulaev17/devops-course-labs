@@ -30,6 +30,7 @@ jobs:
 
             pip install --break-system-packages -r requirements.txt
 
-            echo "DEPLOY_REF=${{ github.sha }}" | sudo tee /etc/catty-app-env
+            echo "DEPLOY_REF=${{ github.sha }}" | sudo tee /etc/default/catty
 
             sudo systemctl restart catty
+
