@@ -5,22 +5,16 @@ set -e
 IMAGE_NAME=$1
 DEPLOY_REF=$2
 
-HOST_PORT=8181
-CONTAINER_PORT=8181
-CONTAINER_NAME="catty-reminders-app"
-
-IMAGE="$IMAGE_NAME:$DEPLOY_REF"
-
 echo "=== DEPLOY RELEASE ==="
 echo "DEPLOY_REF=$DEPLOY_REF"
 
-docker pull $IMAGE
+sudo docker pull $IMAGE_NAME:$DEPLOY_REF
 
-docker stop $CONTAINER_NAME || true
-docker rm $CONTAINER_NAME || true
+sudo docker stop catty-reminders-app || true
+sudo docker rm catty-reminders-app || true
 
-docker run -d \
-  -p $HOST_PORT:$CONTAINER_PORT \
-  --name $CONTAINER_NAME \
+sudo docker run -d \
+  -p 8181:8181 \
+  --name catty-reminders-app \
   --restart unless-stopped \
-  $IMAGE
+  $IMAGE_NAME:$DEPLOY_REF
