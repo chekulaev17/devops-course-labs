@@ -27,4 +27,4 @@ jobs:
 
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u chekulaev17 --password-stdin
 
-            ./deploy.sh "ghcr.io/chekulaev17/catty-reminders-app" "${{ github.event.release.target_commitish }}"
+            ./deploy.sh "ghcr.io/chekulaev17/catty-reminders-app" "${{ github.sha }}"
