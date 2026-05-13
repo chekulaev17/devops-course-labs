@@ -24,7 +24,7 @@ jobs:
           pip install pytest-playwright playwright
 
       - name: Install Playwright browsers
-        run: playwright install --with-deps
+        run: playwright install chromium
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
