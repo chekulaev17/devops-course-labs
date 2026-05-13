@@ -1,23 +1,32 @@
 name: CI
 
-permissions:
-  contents: read
-  packages: write
-
 on:
   push:
+    branches:
+      - lab3*
   pull_request:
   workflow_dispatch:
 
 jobs:
-  test:
+  docker-lint:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - uses: actions/checkout@v4
+
+      - name: Hadolint
+        continue-on-error: true
+        run: |
+          docker run --rm -i hadolint/hadolint hadolint - < Dockerfile
+
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Install Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -27,22 +36,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest-playwright playwright
-
-      - name: Install Playwright browsers
-        run: playwright install --with-deps
+          playwright install --with-deps
 
       - name: Build Docker image
         run: docker build -t catty-app .
 
-      - name: Run Docker container
+      - name: Start container
         run: |
           docker run -d -p 8181:8181 --name catty catty-app
           sleep 10
 
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest --junitxml=test_result.xml
 
       - name: Upload test results
@@ -52,11 +58,29 @@ jobs:
           name: test_result
           path: test_result.xml
 
+  docker-build:
+    runs-on: ubuntu-latest
+
+    needs: pipeline
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set lowercase repository owner
+        run: echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: chekulaev17
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
@@ -64,4 +88,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}
+          build-args: |
+            DEPLOY_REF=${{ github.sha }}
+          tags: |
+            ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}

@@ -11,6 +11,9 @@ CONTAINER_NAME="catty-reminders-app"
 
 IMAGE="$IMAGE_NAME:$DEPLOY_REF"
 
+echo "=== DEPLOY RELEASE ==="
+echo "DEPLOY_REF=$DEPLOY_REF"
+
 docker pull $IMAGE
 
 docker stop $CONTAINER_NAME || true
@@ -20,5 +23,4 @@ docker run -d \
   -p $HOST_PORT:$CONTAINER_PORT \
   --name $CONTAINER_NAME \
   --restart unless-stopped \
-  -e DEPLOY_REF=$DEPLOY_REF \
   $IMAGE
