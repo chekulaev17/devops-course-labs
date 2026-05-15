@@ -90,4 +90,5 @@ jobs:
           build-args: |
             DEPLOY_REF=${{ github.sha }}
           tags: |
-            ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}
+  ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}
+  ghcr.io/chekulaev17/catty-reminders-app:latest
