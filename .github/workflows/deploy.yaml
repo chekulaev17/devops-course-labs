@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy application
+      - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
-
         with:
-          host: course.prafdin.ru
-          username: chekulaev17
-          port: 3179
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          port: ${{ vars.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           script: |

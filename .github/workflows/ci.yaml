@@ -35,14 +35,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest-playwright playwright
-          playwright install --with-deps
+          playwright install --with-deps chromium
 
-      - name: Build Docker image
-        run: docker build -t catty-app .
-
-      - name: Start container
+      - name: Start app
         run: |
-          docker run -d -p 8181:8181 --name catty catty-app
+          nohup uvicorn app.main:app --host 127.0.0.1 --port 8181 &
           sleep 10
 
       - name: Run tests
@@ -70,22 +67,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set lowercase repository owner
-        run: echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
-        env:
-          OWNER: ${{ github.repository_owner }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: chekulaev17
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64
+          provenance: false
           push: true
           build-args: |
             DEPLOY_REF=${{ github.sha }}
