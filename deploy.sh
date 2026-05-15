@@ -6,6 +6,7 @@ IMAGE_NAME=$1
 DEPLOY_REF=$2
 
 echo "=== DEPLOY RELEASE ==="
+echo "IMAGE_NAME=$IMAGE_NAME"
 echo "DEPLOY_REF=$DEPLOY_REF"
 
 sudo docker pull $IMAGE_NAME:$DEPLOY_REF
