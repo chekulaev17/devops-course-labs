@@ -22,30 +22,46 @@ jobs:
           script: |
             set -e
 
-            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:latest"
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
             CONTAINER_NAME="catty-reminders-app"
 
             echo "=== Docker deployment started ==="
 
-            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io -u chekulaev17 --password-stdin
+            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io \
+              -u chekulaev17 \
+              --password-stdin
 
+            echo "=== Stop old container ==="
             sudo docker stop $CONTAINER_NAME || true
+
+            echo "=== Remove old container ==="
             sudo docker rm -f $CONTAINER_NAME || true
 
+            echo "=== Pull new image ==="
             sudo docker pull $IMAGE_NAME
 
+            echo "=== Start new container ==="
             sudo docker run -d \
+              --restart always \
               --name $CONTAINER_NAME \
-              --restart unless-stopped \
               -p 8181:8181 \
               $IMAGE_NAME
 
-            echo "Waiting container startup..."
+            echo "=== Waiting for application ==="
 
-            sleep 25
+            for i in {1..15}; do
+              if curl -s http://localhost:8181/login 2>/dev/null | grep -q "deployref"; then
+                echo "✅ Application is responding"
+                exit 0
+              fi
 
-            echo "Checking application..."
+              echo "Waiting..."
+              sleep 10
+            done
 
-            curl -I http://localhost:8181/login
+            echo "❌ Application failed health check"
 
-            echo "Deploy success"
+            echo "=== Container logs ==="
+            sudo docker logs $CONTAINER_NAME || true
+
+            exit 1
