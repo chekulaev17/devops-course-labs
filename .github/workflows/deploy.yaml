@@ -31,11 +31,14 @@ jobs:
               -u chekulaev17 \
               --password-stdin
 
+            echo "=== Restart docker daemon ==="
+            sudo systemctl restart docker
+
             echo "=== Stop old container ==="
             sudo docker stop $CONTAINER_NAME || true
 
             echo "=== Remove old container ==="
-            sudo docker rm -f $CONTAINER_NAME 
+            sudo docker rm -f $CONTAINER_NAME || true
 
             echo "=== Pull new image ==="
             sudo docker pull $IMAGE_NAME
