@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy
+      - name: Deploy app via Docker
         uses: appleboy/ssh-action@v1.0.3
 
         with:
@@ -25,15 +25,34 @@ jobs:
             IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
             CONTAINER_NAME="catty-reminders-app"
 
-            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io -u chekulaev17 --password-stdin
+            echo "=== Docker deployment started ==="
 
-            sudo docker stop $CONTAINER_NAME || true
-            sudo docker rm $CONTAINER_NAME || true
+            echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io -u chekulaev17 --password-stdin
 
-            sudo docker pull $IMAGE_NAME
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
 
-            sudo docker run -d \
+            docker pull $IMAGE_NAME
+
+            docker run -d \
               --name $CONTAINER_NAME \
               --restart unless-stopped \
               -p 8181:8181 \
               $IMAGE_NAME
+
+            echo "⏳ Waiting for application..."
+
+            for i in {1..15}; do
+              if curl -s http://localhost:8181/login 2>/dev/null | grep -q "deployref"; then
+                echo "✅ Application is responding"
+                exit 0
+              fi
+
+              sleep 5
+            done
+
+            echo "❌ Application failed health check"
+
+            docker logs $CONTAINER_NAME || true
+
+            exit 1
