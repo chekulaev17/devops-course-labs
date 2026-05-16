@@ -1,70 +1,57 @@
 name: Deploy
-
 on:
   release:
     types: [published]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Deploy app via Docker
         uses: appleboy/ssh-action@v1.0.3
-
         with:
           host: course.prafdin.ru
           username: chekulaev17
           port: 3179
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 30m
-
           script: |
             set -e
-
-            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.event.release.target_commitish }}"
+            # ✅ Используем github.sha вместо target_commitish
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
             CONTAINER_NAME="catty-reminders-app"
-
+            
             echo "=== Docker deployment started ==="
-
             echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io \
               -u chekulaev17 \
               --password-stdin
-
+            
             echo "=== Stop old container ==="
             sudo docker stop $CONTAINER_NAME || true
-
+            
             echo "=== Remove old container ==="
             sudo docker rm -f $CONTAINER_NAME || true
-
-            echo "=== Remove old image ==="
-            sudo docker rmi -f $IMAGE_NAME || true
-
+            
             echo "=== Pull new image ==="
             sudo docker pull $IMAGE_NAME
-
+            
             echo "=== Start new container ==="
             sudo docker run -d \
               --restart always \
               --name $CONTAINER_NAME \
               -p 8181:8181 \
               $IMAGE_NAME
-
+            
             echo "=== Waiting for application ==="
-
             for i in {1..30}; do
               if curl -s http://localhost:8181/login 2>/dev/null | grep -q "deployref"; then
                 echo "✅ Application is responding"
                 exit 0
               fi
-
               echo "Waiting..."
               sleep 10
             done
-
+            
             echo "❌ Application failed health check"
-
             echo "=== Container logs ==="
             sudo docker logs $CONTAINER_NAME || true
-
             exit 1
