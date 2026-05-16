@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches:
-      - lab3*
   workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   docker-lint:
@@ -72,7 +74,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.DOCKER_PAT }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -85,4 +87,4 @@ jobs:
             DEPLOY_REF=${{ github.sha }}
           tags: |
             ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}
-
+            ghcr.io/chekulaev17/catty-reminders-app:latest

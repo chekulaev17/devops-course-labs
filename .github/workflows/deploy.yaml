@@ -11,21 +11,29 @@ jobs:
     steps:
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
+
         with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          port: ${{ vars.SSH_PORT }}
+          host: course.prafdin.ru
+          username: chekulaev17
+          port: 3179
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 30m
 
           script: |
             set -e
 
-            cd /home/chekulaev17/catty-reminders-app
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
+            CONTAINER_NAME="catty-reminders-app"
 
-            chmod +x deploy.sh
+            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io -u chekulaev17 --password-stdin
 
-            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u chekulaev17 --password-stdin
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm $CONTAINER_NAME || true
 
-            ./deploy.sh \
-              "ghcr.io/chekulaev17/catty-reminders-app" \
-              "${{ github.sha }}"
+            sudo docker pull $IMAGE_NAME
+
+            sudo docker run -d \
+              --name $CONTAINER_NAME \
+              --restart unless-stopped \
+              -p 8181:8181 \
+              $IMAGE_NAME
