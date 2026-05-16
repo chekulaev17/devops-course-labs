@@ -27,14 +27,14 @@ jobs:
 
             echo "=== Docker deployment started ==="
 
-            echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io -u chekulaev17 --password-stdin
+            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io -u chekulaev17 --password-stdin
 
-            docker stop $CONTAINER_NAME || true
-            docker rm -f $CONTAINER_NAME || true
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm -f $CONTAINER_NAME || true
 
-            docker pull $IMAGE_NAME
+            sudo docker pull $IMAGE_NAME
 
-            docker run -d \
+            sudo docker run -d \
               --name $CONTAINER_NAME \
               --restart unless-stopped \
               -p 8181:8181 \
