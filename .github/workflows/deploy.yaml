@@ -35,7 +35,7 @@ jobs:
             sudo docker stop $CONTAINER_NAME || true
 
             echo "=== Remove old container ==="
-            sudo docker rm -f $CONTAINER_NAME || true
+            sudo docker rm -f $CONTAINER_NAME 
 
             echo "=== Pull new image ==="
             sudo docker pull $IMAGE_NAME
@@ -49,7 +49,7 @@ jobs:
 
             echo "=== Waiting for application ==="
 
-            for i in {1..15}; do
+            for i in {1..30}; do
               if curl -s http://localhost:8181/login 2>/dev/null | grep -q "deployref"; then
                 echo "✅ Application is responding"
                 exit 0

@@ -8,7 +8,7 @@ auth.token = "devops"
 name = "app-chekulaev17"
 type = "http"
 localPort = 8181
-customDomains = ["app.chekulaev17.course.prafdin.ru"]
+customDomains = ["app.chekulaev.course.prafdin.ru"]
 
 [[proxies]]
 name = "ssh-chekulaev17"
