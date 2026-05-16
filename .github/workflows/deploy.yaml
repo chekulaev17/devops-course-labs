@@ -22,7 +22,7 @@ jobs:
           script: |
             set -e
 
-            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:latest"
             CONTAINER_NAME="catty-reminders-app"
 
             echo "=== Docker deployment started ==="
@@ -30,7 +30,7 @@ jobs:
             echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io -u chekulaev17 --password-stdin
 
             docker stop $CONTAINER_NAME || true
-            docker rm $CONTAINER_NAME || true
+            docker rm -f $CONTAINER_NAME || true
 
             docker pull $IMAGE_NAME
 
