@@ -30,6 +30,7 @@ jobs:
 
             echo "=== Remove old container ==="
             docker rm -f $CONTAINER_NAME || true
+            sudo fuser -k 8181/tcp || true
 
             echo "=== Remove cached image ==="
             docker rmi -f $IMAGE_NAME || true
