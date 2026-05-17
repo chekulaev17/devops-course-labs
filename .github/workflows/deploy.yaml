@@ -31,9 +31,6 @@ jobs:
               -u chekulaev17 \
               --password-stdin
 
-            echo "=== Restart docker daemon ==="
-            systemctl restart docker
-
             echo "=== Stop old container ==="
             docker stop $CONTAINER_NAME || true
 
