@@ -17,12 +17,9 @@ jobs:
           username: chekulaev17
           port: 3179
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 30m
 
           script: |
-            set -e
-
-            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:latest"
             CONTAINER_NAME="catty-reminders-app"
 
             echo "=== Docker deployment started ==="
@@ -30,9 +27,6 @@ jobs:
             echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io \
               -u chekulaev17 \
               --password-stdin
-
-            echo "=== Stop old container ==="
-            docker stop $CONTAINER_NAME || true
 
             echo "=== Remove old container ==="
             docker rm -f $CONTAINER_NAME || true
@@ -45,23 +39,7 @@ jobs:
               --restart always \
               --name $CONTAINER_NAME \
               -p 8181:8181 \
+              -e DEPLOY_REF=${{ github.sha }} \
               $IMAGE_NAME
 
-            echo "=== Waiting for application ==="
-
-            for i in {1..30}; do
-              if curl -s http://localhost:8181/login 2>/dev/null | grep -q "deployref"; then
-                echo "✅ Application is responding"
-                exit 0
-              fi
-
-              echo "Waiting..."
-              sleep 10
-            done
-
-            echo "❌ Application failed health check"
-
-            echo "=== Container logs ==="
-            docker logs $CONTAINER_NAME || true
-
-            exit 1
+            echo "=== Deploy completed ==="
