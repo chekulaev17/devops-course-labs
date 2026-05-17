@@ -27,24 +27,24 @@ jobs:
 
             echo "=== Docker deployment started ==="
 
-            echo "${{ secrets.DOCKER_PAT }}" | sudo docker login ghcr.io \
+            echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io \
               -u chekulaev17 \
               --password-stdin
 
             echo "=== Restart docker daemon ==="
-            sudo systemctl restart docker
+            systemctl restart docker
 
             echo "=== Stop old container ==="
-            sudo docker stop $CONTAINER_NAME || true
+            docker stop $CONTAINER_NAME || true
 
             echo "=== Remove old container ==="
-            sudo docker rm -f $CONTAINER_NAME || true
+            docker rm -f $CONTAINER_NAME || true
 
             echo "=== Pull new image ==="
-            sudo docker pull $IMAGE_NAME
+            docker pull $IMAGE_NAME
 
             echo "=== Start new container ==="
-            sudo docker run -d \
+            docker run -d \
               --restart always \
               --name $CONTAINER_NAME \
               -p 8181:8181 \
@@ -65,6 +65,6 @@ jobs:
             echo "❌ Application failed health check"
 
             echo "=== Container logs ==="
-            sudo docker logs $CONTAINER_NAME || true
+            docker logs $CONTAINER_NAME || true
 
             exit 1
