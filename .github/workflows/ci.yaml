@@ -37,7 +37,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest-playwright playwright
-          playwright install --with-deps chromium
+          playwright install chromium
 
       - name: Start app
         run: |
