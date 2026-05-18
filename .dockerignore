@@ -2,7 +2,5 @@
 .idea
 **pycache**
 .pytest_cache
-tests
-testlib
 venv
 .venv
