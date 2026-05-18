@@ -6,7 +6,6 @@ This module is the main module for the FastAPI app.
 # Imports
 # --------------------------------------------------------------------------------
 
-import os
 from app.utils.exceptions import UnauthorizedPageException
 from app.routers import api, login, reminders, root
 
@@ -22,26 +21,6 @@ from starlette.exceptions import HTTPException
 # --------------------------------------------------------------------------------
 
 app = FastAPI()
-
-# Считываем SHA коммита из переменной окружения, которую передаем в Docker
-DEPLOY_REF = os.getenv("DEPLOY_REF", "unknown")
-
-# Добавляем эндпоинт для проверки здоровья и версии (для бота-тестера)
-@app.get("/health")
-async def health_check():
-    return {
-        "status": "ok",
-        "deploy_ref": DEPLOY_REF
-    }
-
-# Middleware: добавляет SHA в заголовки любого ответа
-@app.middleware("http")
-async def add_deploy_ref_header(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["X-Deploy-Ref"] = DEPLOY_REF
-    return response
-
-# Подключение роутеров
 app.include_router(root.router)
 app.include_router(api.router)
 app.include_router(login.router)
@@ -61,15 +40,15 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.exception_handler(UnauthorizedPageException)
 async def unauthorized_exception_handler(request: Request, exc: UnauthorizedPageException):
-    return RedirectResponse('/login?unauthorized=True', status_code=302)
+  return RedirectResponse('/login?unauthorized=True', status_code=302)
 
 
 @app.exception_handler(404)
 async def page_not_found_exception_handler(request: Request, exc: HTTPException):
-    if request.url.path.startswith('/api/'):
-        return JSONResponse({'detail': exc.detail}, status_code=exc.status_code)
-    else:
-        return RedirectResponse('/not-found')
+  if request.url.path.startswith('/api/'):
+    return JSONResponse({'detail': exc.detail}, status_code=exc.status_code)
+  else:
+    return RedirectResponse('/not-found')
 
 
 # --------------------------------------------------------------------------------
@@ -77,46 +56,46 @@ async def page_not_found_exception_handler(request: Request, exc: HTTPException)
 # --------------------------------------------------------------------------------
 
 def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-  
-    description = \
-        """Catty is a web app for tracking reminders.
-        It is a full-stack Python app built using FastAPI and HTMX.
-        It is meant to be an "example" or "demo" app used for instructional purposes.
-        """
-
-    openapi_schema = get_openapi(
-        title="Catty: The Reminders App",
-        version="1.0.0",
-        description=description,
-        routes=app.routes,
-        tags=[
-            {
-                "name": "API",
-                "description": "Backend API routes for managing reminder lists and items.",
-            },
-            {
-                "name": "Pages",
-                "description": "The main Catty web pages.",
-            },
-            {
-                "name": "Authentication",
-                "description": "Routes for logging into and out of the app.",
-            },
-            {
-                "name": "HTMX Partials",
-                "description": "Routes that serve partial web page contents for HTMX-based requests.",
-            },
-        ]
-    )
-
-    openapi_schema["info"]["x-logo"] = {
-        "url": "static/img/logos/catty-500px.png"
-    }
-
-    app.openapi_schema = openapi_schema
+  if app.openapi_schema:
     return app.openapi_schema
+  
+  description = \
+    """Catty is a web app for tracking reminders.
+    It is a full-stack Python app built using FastAPI and HTMX.
+    It is meant to be an "example" or "demo" app used for instructional purposes.
+    """
+
+  openapi_schema = get_openapi(
+    title="Catty: The Reminders App",
+    version="1.0.0",
+    description=description,
+    routes=app.routes,
+    tags=[
+      {
+        "name": "API",
+        "description": "Backend API routes for managing reminder lists and items.",
+      },
+      {
+        "name": "Pages",
+        "description": "The main Catty web pages.",
+      },
+      {
+        "name": "Authentication",
+        "description": "Routes for logging into and out of the app.",
+      },
+      {
+        "name": "HTMX Partials",
+        "description": "Routes that serve partial web page contents for HTMX-based requests.",
+      },
+    ]
+  )
+
+  openapi_schema["info"]["x-logo"] = {
+    "url": "static/img/logos/catty-500px.png"
+  }
+
+  app.openapi_schema = openapi_schema
+  return app.openapi_schema
 
 
 app.openapi = custom_openapi
