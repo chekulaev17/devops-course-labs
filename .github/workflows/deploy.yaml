@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           script: |
-            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:latest"
+            IMAGE_NAME="ghcr.io/chekulaev17/catty-reminders-app:${{ github.sha }}"
             CONTAINER_NAME="catty-reminders-app"
 
             echo "=== Docker deployment started ==="
@@ -29,11 +29,8 @@ jobs:
               --password-stdin
 
             echo "=== Remove old container ==="
-            docker rm -f $CONTAINER_NAME || true
-            sudo fuser -k 8181/tcp || true
-
-            echo "=== Remove cached image ==="
-            docker rmi -f $IMAGE_NAME || true
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
 
             echo "=== Pull new image ==="
             docker pull $IMAGE_NAME
