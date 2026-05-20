@@ -4,3 +4,24 @@ on:
   release:
     types: [published]
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.PROXY }}
+          port: ${{ vars.SSH_PORT }}
+          username: ${{ vars.USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /home/chekulaev17/catty-reminders-app
+            echo "${{ secrets.DOCKER_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            export DEPLOY_REF=${{ github.sha }}
+            export IMAGE=ghcr.io/$OWNER/${{ github.event.repository.name }}:${{ github.sha }}
+            docker compose up -d --pull always --remove-orphans --force-recreate
