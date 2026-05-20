@@ -14,9 +14,9 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ vars.PROXY }}
+          host: ${{ vars.SSH_HOST }}
           port: ${{ vars.SSH_PORT }}
-          username: ${{ vars.USER }}
+          username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
