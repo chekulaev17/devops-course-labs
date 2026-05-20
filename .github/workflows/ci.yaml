@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches:
+      - lab3
       - lab3*
 
 permissions:
